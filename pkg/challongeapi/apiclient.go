@@ -10,6 +10,7 @@ import (
 const (
 	BASE_URL         = "https://api.challonge.com/v1"
 	TOURNAMENT_INDEX = "/tournaments.json"
+	TOURNAMENT_SHOW  = "/tournaments/{tournament}.json"
 )
 
 type ChallongeAPIClient struct {
@@ -48,7 +49,7 @@ func (a *ChallongeAPIClient) buildEndpointURL(endpoint string, params map[string
 }
 
 // Method expects URL to have params encoded, if any are present
-func (a *ChallongeAPIClient) GetRequest(url *url.URL) ([]byte, error) {
+func (a *ChallongeAPIClient) get(url *url.URL) ([]byte, error) {
 	response, err := http.Get(url.String())
 	if err != nil {
 		log.Printf("Error executing GET request: %v", err)
@@ -63,4 +64,18 @@ func (a *ChallongeAPIClient) GetRequest(url *url.URL) ([]byte, error) {
 	}
 
 	return responseData, nil
+}
+
+func (a *ChallongeAPIClient) GetRequest(endpointURL string, params map[string]string) ([]byte, error) {
+	url, err := a.buildEndpointURL(endpointURL, params)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := a.get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
