@@ -10,6 +10,7 @@ type Tournament struct {
 	ChallongeID  uint64                `json:"id"`
 	State        string                `json:"state"`
 	StartAt      string                `json:"start_at"`
+	StartedAt    string                `json:"started_at"`
 	Participants []ParticipantResponse `json:"participants,omitempty"`
 }
 
