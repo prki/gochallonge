@@ -9,6 +9,7 @@ type Tournament struct {
 	URL          string                `json:"url"`
 	ChallongeID  uint64                `json:"id"`
 	State        string                `json:"state"`
+	StartedAt    string                `json:"started_at"`
 	Participants []ParticipantResponse `json:"participants,omitempty"`
 }
 
