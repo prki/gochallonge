@@ -2,34 +2,50 @@ package challonge
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
-type TournamentInstance struct {
-	Name        string `json:"name"`
-	URL         string `json:"url"`
-	ChallongeID uint64 `json:"id"`
-	State       string `json:"state"`
+type Tournament struct {
+	Name         string                `json:"name"`
+	URL          string                `json:"url"`
+	ChallongeID  uint64                `json:"id"`
+	State        string                `json:"state"`
+	Participants []ParticipantResponse `json:"participants,omitempty"`
 }
 
-type Tournament struct {
-	Tournament TournamentInstance `json:"tournament"`
+type TournamentResponse struct {
+	Tournament Tournament `json:"tournament"`
 }
 
 // Challonge docs: https://api.challonge.com/v1/documents/tournaments/index
-func (c *Challonge) TournamentIndex() ([]Tournament, error) {
+func (c *Challonge) TournamentIndex() ([]TournamentResponse, error) {
 	params := make(map[string]string) // [TODO] Not implemented additional params
 	tournaments, err := c.apiClient.TournamentIndex(params)
 	if err != nil {
 		return nil, err
 	}
 
-	var ret []Tournament
+	var ret []TournamentResponse
 	json.Unmarshal(tournaments, &ret)
 
-	for i := 0; i < len(ret); i++ {
-		fmt.Printf("Tournament name: %v, URL: %v, ID: %d, State: %v\n", ret[i].Tournament.Name, ret[i].Tournament.URL, ret[i].Tournament.ChallongeID, ret[i].Tournament.State)
+	return ret, nil
+}
+
+func (c *Challonge) TournamentShow(tournamentID string, includeParticipants bool, includeMatches bool) (*TournamentResponse, error) {
+	params := make(map[string]string)
+	if includeParticipants {
+		params["include_participants"] = "1"
 	}
+	if includeMatches {
+		params["include_matches"] = "1"
+	}
+
+	tournament, err := c.apiClient.TournamentShow(tournamentID, params)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := new(TournamentResponse)
+	json.Unmarshal(tournament, ret)
 
 	return ret, nil
 }
