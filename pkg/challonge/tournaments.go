@@ -2,6 +2,7 @@ package challonge
 
 import (
 	"encoding/json"
+	"log"
 )
 
 type Tournament struct {
@@ -19,8 +20,12 @@ type TournamentResponse struct {
 }
 
 // Challonge docs: https://api.challonge.com/v1/documents/tournaments/index
-func (c *Challonge) TournamentIndex() ([]TournamentResponse, error) {
-	params := make(map[string]string) // [TODO] Not implemented additional params
+func (c *Challonge) TournamentIndex(subdomain string) ([]TournamentResponse, error) {
+	params := make(map[string]string)
+	if subdomain != "" {
+		params["subdomain"] = subdomain
+	}
+
 	tournaments, err := c.apiClient.TournamentIndex(params)
 	if err != nil {
 		return nil, err
@@ -47,7 +52,11 @@ func (c *Challonge) TournamentShow(tournamentID string, includeParticipants bool
 	}
 
 	ret := new(TournamentResponse)
-	json.Unmarshal(tournament, ret)
+	err = json.Unmarshal(tournament, ret)
+	if err != nil {
+		log.Printf("Error unmarshaling tournament response: %v\n", err)
+		return nil, err
+	}
 
 	return ret, nil
 }
