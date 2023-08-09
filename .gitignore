@@ -19,3 +19,6 @@
 
 # Go workspace file
 go.work
+
+# As a library, main.go is not to be committed.
+cmd/main.go
