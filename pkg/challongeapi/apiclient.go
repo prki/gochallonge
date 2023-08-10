@@ -14,7 +14,8 @@ const (
 )
 
 type ChallongeAPIClient struct {
-	apiKey string
+	apiKey    string
+	Subdomain *string
 }
 
 func NewChallongeAPIClient(apiKey string) *ChallongeAPIClient {
